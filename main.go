@@ -27,7 +27,7 @@ func getUrls() []string {
 		if len(match) == 0 {
 			continue
 		}
-		urls = append(urls, match[1])
+		urls = append(urls, "https://soundcloud.com"+match[1])
 	}
 	return urls
 }
