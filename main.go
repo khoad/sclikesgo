@@ -3,19 +3,47 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"regexp"
 )
 
+// Usage: cat ~/Desktop/sclikes_html.txt | go run main.go
 func main() {
-	urls := getUrls()
+	urls := getBrowserUrls()
 	for _, url := range urls {
-		fmt.Println(url)
+		wurl := getWaveFormUrl(url)
+		fmt.Println(wurl)
 	}
 	fmt.Println("Total", len(urls))
 }
 
-func getUrls() []string {
+func getWaveFormUrl(browserUrl string) string {
+	// input
+	// browserUrl := "https://soundcloud.com/lana-del-rey/ultraviolence-disciples-remix-1"
+	resp, err := http.Get(browserUrl)
+	if err != nil {
+		fmt.Println("Error getting", browserUrl)
+	}
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading", browserUrl)
+	}
+	respString := string(respBytes)
+
+	r := regexp.MustCompile(`"waveform_url":"(http.*\.json)"`)
+
+	match := r.FindStringSubmatch(respString)
+	waveformUrl := match[1]
+
+	// output
+	// waveformUrl := "https://wis.sndcdn.com/iCvi12jhGTIQ_m.json"
+	return waveformUrl
+}
+
+func getBrowserUrls() []string {
 	urls := []string{}
 	r := regexp.MustCompile(`<a class="audibleTile__artworkLink" href="(.*)">`)
 
