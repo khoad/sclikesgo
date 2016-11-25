@@ -8,8 +8,16 @@ import (
 )
 
 func main() {
+	urls := getUrls()
+	for _, url := range urls {
+		fmt.Println(url)
+	}
+	fmt.Println("Total", len(urls))
+}
+
+func getUrls() []string {
+	urls := []string{}
 	r := regexp.MustCompile(`<a class="audibleTile__artworkLink" href="(.*)">`)
-	i := 0
 
 	// Read lines from stdin
 	s := bufio.NewScanner(os.Stdin)
@@ -19,8 +27,7 @@ func main() {
 		if len(match) == 0 {
 			continue
 		}
-		i++
-		fmt.Println(match[1])
+		urls = append(urls, match[1])
 	}
-	fmt.Println("Total", i)
+	return urls
 }
