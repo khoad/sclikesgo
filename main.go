@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,12 +12,32 @@ import (
 
 // Usage: cat ~/Desktop/sclikes_html.txt | go run main.go
 func main() {
-	urls := getBrowserUrls()
-	for _, url := range urls {
-		wurl := getWaveFormUrl(url)
-		fmt.Println(wurl)
+	//urls := getBrowserUrls()
+	//for _, url := range urls {
+	//	wurl := getWaveFormUrl(url)
+	//	fmt.Println(wurl)
+	//}
+	//fmt.Println("Total", len(urls))
+
+	waveformUrl := "https://wis.sndcdn.com/iCvi12jhGTIQ_m.json"
+
+	resp, err := http.Get(waveformUrl)
+	if err != nil {
+		fmt.Println("Error getting", waveformUrl)
 	}
-	fmt.Println("Total", len(urls))
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+
+	var wf waveform
+	json.Unmarshal(respBytes, &wf)
+	//fmt.Println(wf.Content)
+
+	ioutil.WriteFile("test.mp3", wf.Content, 0644)
+}
+
+type waveform struct {
+	Content []byte `json:"samples"`
 }
 
 func getWaveFormUrl(browserUrl string) string {
@@ -26,6 +47,7 @@ func getWaveFormUrl(browserUrl string) string {
 	if err != nil {
 		fmt.Println("Error getting", browserUrl)
 	}
+	defer resp.Body.Close()
 
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
