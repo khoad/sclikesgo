@@ -50,19 +50,19 @@ func off(url string) string {
 	resp, err := http.PostForm("http://offliberty.com/off03.php",
 		urllib.Values{"track": {url}})
 	if err != nil {
-		fmt.Println("ERR getting", url)
+		fmt.Println("ERR getting", url, err)
 		return ""
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Status not OK")
+		fmt.Println("Status not OK", resp.Status)
 		return ""
 	}
 
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("ERR reading", url)
+		fmt.Println("ERR reading", url, err)
 		return ""
 	}
 
