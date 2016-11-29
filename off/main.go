@@ -9,6 +9,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -46,6 +47,10 @@ func main() {
 }
 
 func off(url string) string {
+	sleepsec := 5
+	fmt.Println("Sleeping", sleepsec, "seconds")
+	time.Sleep(5 * time.Second)
+
 	fmt.Println("Offing...", url)
 	resp, err := http.PostForm("http://offliberty.com/off03.php",
 		urllib.Values{"track": {url}})
@@ -73,6 +78,7 @@ func off(url string) string {
 	match := rex.FindStringSubmatch(respString)
 
 	if len(match) == 0 {
+		fmt.Println("Regex not matching respString", respString)
 		return ""
 	}
 	return match[1]
